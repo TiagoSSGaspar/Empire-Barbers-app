@@ -1,6 +1,10 @@
 import React, { useCallback, useRef } from 'react'
 import { useNavigation } from '@react-navigation/native';
-import { Image, KeyboardAvoidingView, Platform, View, ScrollView, TextInput } from 'react-native';
+import { Image, KeyboardAvoidingView, Platform, View, ScrollView, TextInput, Alert } from 'react-native';
+
+import * as Yup from 'yup';
+
+import getValidationErrors from '../../utils/getValidationErrors';
 
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
@@ -14,13 +18,49 @@ import Button from '../../components/Button';
 
 import {Container, CreateAccountButton, CreateAccountButtonText, ForgotPassword, ForgotPasswordText, Title} from './styles';
 
+interface SignFormData {
+  email: string;
+  password: string;
+}
+
 const SignIn: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
   const passwordInputRef = useRef<TextInput>(null);
   const navigation = useNavigation();
 
-  const handleSignIn = useCallback((data: object) => {
-    console.log(data);
+  const handleSignIn = useCallback(async (data: SignFormData) => {
+    try {
+      formRef.current?.setErrors({});
+      const shema = Yup.object().shape({
+        email: Yup.string().required('E-mail obrigatório').email('Digite um email válido'),
+        password: Yup.string().required('Senha obrigatória')
+      });
+
+      await shema.validate(data,{
+        abortEarly: false,
+      });
+      /*
+      await signIn({
+        email: data.email,
+        password: data.password
+      });
+
+      history.push('/dashboard')
+      */
+
+    } catch (error) {
+
+      if(error instanceof Yup.ValidationError) {
+        const errors = getValidationErrors(error);
+
+        formRef.current?.setErrors(errors);
+
+        return
+      }
+
+      Alert.alert('Erro na autenticação', 'Error ao efetuar login, cheque as credenciais.')
+
+    }
   }, []);
 
   return (
@@ -39,8 +79,8 @@ const SignIn: React.FC = () => {
             <Form ref={formRef} onSubmit={handleSignIn}>
 
               <Input
-                name="e-mail" icon="mail" placeholder="E-mail"
-                autoCorrect={false} autoCapitalize={'none'}
+                name="email" icon="mail" placeholder="E-mail"
+                autoCorrect={true} autoCapitalize={'none'}
                 keyboardType={'email-address'} returnKeyType={'next'}
                 onSubmitEditing={() => {
                   passwordInputRef.current?.focus();
