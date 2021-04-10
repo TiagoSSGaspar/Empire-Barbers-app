@@ -9,6 +9,8 @@ import getValidationErrors from '../../utils/getValidationErrors';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
 
+import { useAuth } from '../../hooks/Auth';
+
 import Icon from 'react-native-vector-icons/Feather';
 
 import logoImg from '../../assets/logo.jpeg';
@@ -27,6 +29,7 @@ const SignIn: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
   const passwordInputRef = useRef<TextInput>(null);
   const navigation = useNavigation();
+  const {signIn} = useAuth();
 
   const handleSignIn = useCallback(async (data: SignFormData) => {
     try {
@@ -39,14 +42,11 @@ const SignIn: React.FC = () => {
       await shema.validate(data,{
         abortEarly: false,
       });
-      /*
+
       await signIn({
         email: data.email,
         password: data.password
       });
-
-      history.push('/dashboard')
-      */
 
     } catch (error) {
 
@@ -61,7 +61,7 @@ const SignIn: React.FC = () => {
       Alert.alert('Erro na autenticação', 'Error ao efetuar login, cheque as credenciais.')
 
     }
-  }, []);
+  }, [signIn]);
 
   return (
     <>
