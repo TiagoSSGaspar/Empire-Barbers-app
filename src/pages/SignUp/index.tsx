@@ -3,6 +3,8 @@ import { FormHandles } from '@unform/core';
 import { Image, KeyboardAvoidingView, Platform, View, TextInput, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
+import api from '../../services/api';
+
 import * as Yup from 'yup';
 
 import getValidationErrors from '../../utils/getValidationErrors';
@@ -45,11 +47,11 @@ const SignUp: React.FC = () => {
         abortEarly: false,
       });
 
-      //await api.post('/users', data);
+      await api.post('/users', data);
 
-      //history.push('/');
+      navigation.goBack();
 
-      //Alert.alert('Cadastro realizado!','Agora você pode fazer logon na Empire Barbers');
+      Alert.alert('Cadastro realizado!','Agora você pode fazer logon na Empire Barbers');
 
     } catch (error) {
       if(error instanceof Yup.ValidationError) {
@@ -62,7 +64,7 @@ const SignUp: React.FC = () => {
       Alert.alert('Erro no cadastro','Erro ao fazer cadastro, tente novamente!')
 
     }
-  }, []);
+  }, [navigation]);
 
   return (
     <>
