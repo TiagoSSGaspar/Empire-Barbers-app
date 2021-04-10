@@ -9,7 +9,7 @@ import getValidationErrors from '../../utils/getValidationErrors';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
 
-import { useAuth } from '../../hooks/Auth';
+import { useAuth } from '../../hooks/auth';
 
 import Icon from 'react-native-vector-icons/Feather';
 
@@ -29,7 +29,9 @@ const SignIn: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
   const passwordInputRef = useRef<TextInput>(null);
   const navigation = useNavigation();
-  const {signIn} = useAuth();
+  const {signIn, user} = useAuth();
+
+  console.log(user);
 
   const handleSignIn = useCallback(async (data: SignFormData) => {
     try {
